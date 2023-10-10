@@ -1,2 +1,5 @@
-# Filter, alter and analyse sequences
+# `FAAseq.py`
+*Filter, alter and analyse sequences.*
+
+
 
