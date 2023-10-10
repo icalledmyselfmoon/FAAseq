@@ -44,7 +44,14 @@ def aa_tools(*args):
             return None
 
 
-def run_dna_rna_tools(*args):
+def run_dna_rna_tools(*args: str) -> str:
+    """
+    
+    Transforms seq in one of four possible ways: transcribed, reversed, complementary, reversed complementary.
+    Arguments: DNA/RNA sequence as str or a list of str.
+    Returns a transformed sequence as str.
+
+    """
     *seqs, operation = args
     answer = []
     for seq in seqs:
@@ -59,3 +66,4 @@ def run_dna_rna_tools(*args):
             return answer
         else:
             return answer[0]
+
