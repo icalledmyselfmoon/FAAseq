@@ -1,2 +1,2 @@
-# fastq_check
-HW5 repository
+# `FAAseq.py`
+*Filter, alter and analyse sequences.*
