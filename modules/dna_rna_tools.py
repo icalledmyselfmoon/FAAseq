@@ -4,16 +4,34 @@ COMP_BASES_RNA: dict = {'A': 'U', 'C': 'G', 'G': 'C', 'T': 'A', 'a': 'u',
                         'g': 'c', 'c': 'g', 'u': 'a'}
 
 
-def seq_transcribe(seq):
+def seq_transcribe(seq: str) -> str:
+    """
+    
+    Returns a transcribed strand (RNA).
+    Arguments: DNA sequence as str or a list of str. Input of RNA sequence is returned unchanged.
+    
+    """
     rna_seq = seq.replace('t', 'u').replace('T', 'U')
     return rna_seq
 
 
-def seq_reverse(seq):
+def seq_reverse(seq: str) -> str:
+    """
+
+    Returns a reversed sequence.
+    Arguments: DNA/RNA sequence as str or a list of str
+
+    """
     return seq[::-1]
 
 
-def seq_complement(seq):
+def seq_complement(seq: str) -> str:
+    """
+
+    Returns a complementary sequence.
+    Arguments: DNA/RNA sequence as str or a list of str
+
+    """
     if 'T' in set(seq.upper()):
         comp_seq = [COMP_BASES_DNA[nuc] for nuc in seq_list]
     else:
@@ -21,11 +39,24 @@ def seq_complement(seq):
     return ''.join(comp_seq)
 
 
-def seq_reverse_complement(seq):
+def seq_reverse_complement(seq: str) -> str:
+    """
+
+    Returns a complementary sequence.
+    Arguments: DNA/RNA sequence as str or a list of str
+
+    """
     return seq_complement(seq[::-1])
 
 
-def run_dna_rna_tools(*args):
+def run_dna_rna_tools(*args: str) -> str:
+    """
+
+    Transforms seq in one of four possible ways: transcribed, reversed, complementary, reversed complementary.
+    Arguments: DNA/RNA sequence as str or a list of str.
+    Returns a sequence as str.
+
+    """
     *seqs, operation = args
     answer = []
     for seq in seqs:
@@ -36,7 +67,7 @@ def run_dna_rna_tools(*args):
             answer.append(new_seq)
         else:
             pass
-    if len(answer) != 1:
-        return answer
-    else:
-        return answer[0]
+        if len(answer) != 1:
+            return answer
+        else:
+            return answer[0]
