@@ -1,6 +1,3 @@
-from typing import Union
-
-
 def sort_by_length(seqs: dict, length_bounds: Union[int, tuple[int]] = (0.2 ** 32)):
     """
 
@@ -51,7 +48,7 @@ def sort_by_gc(seqs: dict, gc_bounds: Union[int, tuple[int]] = (0, 100)):
     Allows to sort out unsuitable sequences based on the percentage of (G + C) in the nucleotide sequence.
 
     Arguments:
-    -dictionary with keys -strings (names of sequences): values-tuples of strings (sequence, quality scores)
+    -seqs: dictionary with keys -strings (names of sequences): values-tuples of strings (sequence, quality scores)
     -qc_bounds: int or tuple[int]: int = the maximum allowed gc percentage, tuple = allowed range of gc percentage
                 (0,100) by default
 
@@ -68,14 +65,61 @@ def sort_by_gc(seqs: dict, gc_bounds: Union[int, tuple[int]] = (0, 100)):
     return unsuitable_by_gc
 
 
-def fastq_check(seqs: dict, length_bounds: Union[int, tuple[int]] = (0.2 ** 32),
+def fastq_to_dict(input_path: str) -> dict:
+    """
+
+    Read fastq file and turn it's content into a dictionary.
+    Argument: input_path (a path to a fastq file).
+    Return type: a dictionary with keys -strings (names of sequences): values-tuples of strings (sequence, quality scores).
+
+    """
+    fastq_dict = {}
+    fastq_dict = {}
+    with open(input_path) as fastq_file:
+        for line in fastq_file:
+            if line.startswith('@'):
+                seq_name = line.strip()
+                seq = fastq_file.readline().strip()
+                next(fastq_file)
+                quality = (fastq_file.readline().strip())
+                fastq_dict.update({seq_name: (seq, quality)})
+    return fastq_dict
+
+
+def create_filtered_fastq(output_filename: str, selected_seqs: dict):
+    """
+    Creates a folder with a fastq file from a dictionary input with filtered reads.
+    Arguments:
+    -output_filename: str with an output file name
+                      by default is the same as an input file name
+    -seqs: dictionary with keys -strings (names of sequences): values-tuples of strings (sequence, quality scores)
+
+    """
+    output_filename = output_filename
+    output_file = os.path.join('fastq_filtrator_results', output_filename)
+    input_file = open(input_path, 'r')
+    with open(output_file, 'w') as checked_fastq:
+        os.makedirs(os.path.dirname(output_file), exist_ok=True)
+        lines = input_file.readlines()
+        for n, line in enumerate(lines):
+            if line.strip() in selected_seqs.keys():
+                checked_fastq.write(lines[n])
+                checked_fastq.write(lines[n + 1])
+                checked_fastq.write(lines[n + 2])
+                checked_fastq.write(lines[n + 3])
+
+
+def fastq_check(input_path: str, output_filename: str = 'input_filename',
+                length_bounds: Union[int, tuple[int]] = (0.2 ** 32),
                 gc_bounds: Union[int, tuple[int]] = (0, 100), quality_threshold: int = 0) -> dict:
     """
 
-    Returns a dictionary with sequences satisfying given criteria: length, gc proportion, quality threshold.
+    Returns a file with sequences satisfying given criteria: length, gc proportion, quality threshold.
 
     Arguments:
-    -dictionary with keys -strings (names of sequences): values-tuples of strings (sequence, quality scores)
+    -input_path: path to a fastq file
+    -output_filename: str with an output file name
+                      by default is the same as an input file name
     -length_bounds: int or tuple[int], int = the maximum allowed length, tuple = allowed range of lengths
                      0.2**32 by default
     -gc_bounds: int or tuple[int]: int indicates = maximum allowed gc percentage, tuple =  allowed range of percentage
@@ -85,7 +129,10 @@ def fastq_check(seqs: dict, length_bounds: Union[int, tuple[int]] = (0.2 ** 32),
 
 
     """
-    unsuitable_seqs = (sort_by_length(seqs) + sort_by_gc(seqs) + sort_by_quality(seqs))
+    seqs = fastq_to_dict(input_path)
+    unsuitable_seqs = (sort_by_length(seqs, length_bounds) + sort_by_gc(seqs, gc_bounds) + sort_by_quality(seqs, quality_threshold))
     unsuitable_seqs_set = set(unsuitable_seqs)
     selected_seqs = {name: value for name, value in seqs.items() if name not in unsuitable_seqs_set}
-    return selected_seqs
+    if output_filename == 'input_filename':
+        output_filename = os.path.basename(input_path)
+    create_filtered_fastq(output_filename, selected_seqs)
