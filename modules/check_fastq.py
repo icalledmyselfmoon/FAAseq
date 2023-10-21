@@ -1,3 +1,6 @@
+from typing import Union
+
+
 def sort_by_length(seqs: dict, length_bounds: Union[int, tuple[int]] = (0.2 ** 32)):
     """
 
