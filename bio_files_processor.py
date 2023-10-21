@@ -4,9 +4,15 @@ import string
 
 
 def convert_multiline_fasta_to_oneline(input_fasta, output_fasta='input_fasta'):
+    """
+    Create a fasta file with sequences placed in one line from a multiline fasta file.
+    Input: fasta file with sequences placed on separate lines
+    Output: fasta file with aligned sequences.
+
+    """
     input_seq = open(input_fasta, 'r')
     if output_fasta == 'input_fasta':
-        output_fasta = os.path.basename(input_fasta)
+        output_fasta = os.path.basename(input_fasta) + '_1line'
     else:
         output_fasta = output_fasta + '.fasta'
     with open(output_fasta, 'w') as output_seq:
