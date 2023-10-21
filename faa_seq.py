@@ -1,5 +1,7 @@
 from typing import Union
-
+from modules.check_fastq import sort_by_length, sort_by_quality, sort_by_gc, fastq_to_dict, create_filtered_fastq
+from modules.aa_tools import calculate_protein_mass, group_amino_acids
+from modules.dna_rna_tools import seq_transcribe, seq_reverse, seq_complement, seq_reverse_complement
 
 def fastq_check(input_path: str, output_filename: str = 'input_filename',
                 length_bounds: Union[int, tuple[int]] = (0.2 ** 32),
