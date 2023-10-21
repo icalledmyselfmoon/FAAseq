@@ -1,3 +1,6 @@
+from typing import Union
+
+
 def fastq_check(input_path: str, output_filename: str = 'input_filename',
                 length_bounds: Union[int, tuple[int]] = (0.2 ** 32),
                 gc_bounds: Union[int, tuple[int]] = (0, 100), quality_threshold: int = 0) -> dict:
@@ -39,13 +42,13 @@ def aa_tools(*args):
     """
     *seqs, operation = args
 
-    answer = []
+    results = []
     for seq in seqs:
         if set(seq.upper()) <= {'G', 'A', 'V', 'L', 'I', 'P', 'F', 'M', 'W', 'S', 'T', 'C', 'N', 'Q', 'Y', 'E',
                                 'D', 'K', 'H', 'R'}:
             operations = {'calculate_protein_mass': calculate_protein_mass, 'group_amino_acids': group_amino_acids}
-            answer = operations[operation](seq)
-            return answer
+            results = operations[operation](seq)
+            return results
         else:
             return None
 
@@ -59,17 +62,17 @@ def run_dna_rna_tools(*args: str) -> str:
 
     """
     *seqs, operation = args
-    answer = []
+    results = []
     for seq in seqs:
         if set(seq.upper()) <= {'A', 'T', 'C', 'G'} or set(seq.upper()) <= {'A', 'U', 'C', 'G'}:
             operations = {'transcribe': seq_transcribe, 'reverse': seq_reverse, 'complement': seq_complement,
                           'reverse_complement': seq_reverse_complement}
             new_seq = operations[operation](seq)
-            answer.append(new_seq)
+            results.append(new_seq)
         else:
             pass
-        if len(answer) != 1:
-            return answer
+        if len(results) != 1:
+            return results
         else:
-            return answer[0]
+            return results[0]
 
