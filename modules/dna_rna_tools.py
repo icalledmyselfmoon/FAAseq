@@ -58,16 +58,16 @@ def run_dna_rna_tools(*args: str) -> str:
 
     """
     *seqs, operation = args
-    answer = []
+    results = []
     for seq in seqs:
         if set(seq.upper()) <= {'A', 'T', 'C', 'G'} or set(seq.upper()) <= {'A', 'U', 'C', 'G'}:
             operations = {'transcribe': seq_transcribe, 'reverse': seq_reverse, 'complement': seq_complement,
                           'reverse_complement': seq_reverse_complement}
             new_seq = operations[operation](seq)
-            answer.append(new_seq)
+            results.append(new_seq)
         else:
             pass
-        if len(answer) != 1:
-            return answer
+        if len(results) != 1:
+            return results
         else:
-            return answer[0]
+            return results[0]

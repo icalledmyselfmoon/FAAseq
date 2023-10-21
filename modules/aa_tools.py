@@ -17,7 +17,7 @@ def calculate_protein_mass(seq: str) -> float:
     aa_seq = seq.upper()
     mass = 0
     for amino_acid in aa_seq:
-        mass += mass_dictionary[amino_acid]
+        mass += AA_MASSES[amino_acid]
     return mass
 
 
@@ -53,12 +53,12 @@ def aa_tools(*args):
     """
     *seqs, operation = args
 
-    answer = []
+    results = []
     for seq in seqs:
         if set(seq.upper()) <= {'G', 'A', 'V', 'L', 'I', 'P', 'F', 'M', 'W', 'S', 'T', 'C', 'N', 'Q', 'Y', 'E',
                                 'D', 'K', 'H', 'R'}:
             operations = {'calculate_protein_mass': calculate_protein_mass, 'group_amino_acids': group_amino_acids}
-            answer = operations[operation](seq)
-            return answer
+            results = operations[operation](seq)
+            return results
         else:
             return None

@@ -1,11 +1,19 @@
-def fastq_check(seqs: dict, length_bounds: Union[int, tuple[int]] = (0.2 ** 32),
+from typing import Union
+from modules.check_fastq import sort_by_length, sort_by_quality, sort_by_gc, fastq_to_dict, create_filtered_fastq
+from modules.aa_tools import calculate_protein_mass, group_amino_acids
+from modules.dna_rna_tools import seq_transcribe, seq_reverse, seq_complement, seq_reverse_complement
+
+def fastq_check(input_path: str, output_filename: str = 'input_filename',
+                length_bounds: Union[int, tuple[int]] = (0.2 ** 32),
                 gc_bounds: Union[int, tuple[int]] = (0, 100), quality_threshold: int = 0) -> dict:
     """
 
-    Returns a dictionary with sequences satisfying given criteria: length, gc proportion, quality threshold.
+    Returns a file with sequences satisfying given criteria: length, gc proportion, quality threshold.
 
     Arguments:
-    -dictionary with keys -strings (names of sequences): values-tuples of strings (sequence, quality scores)
+    -input_path: path to a fastq file
+    -output_filename: str with an output file name
+                      by default is the same as an input file name
     -length_bounds: int or tuple[int], int = the maximum allowed length, tuple = allowed range of lengths
                      0.2**32 by default
     -gc_bounds: int or tuple[int]: int indicates = maximum allowed gc percentage, tuple =  allowed range of percentage
@@ -15,10 +23,13 @@ def fastq_check(seqs: dict, length_bounds: Union[int, tuple[int]] = (0.2 ** 32),
 
 
     """
-    unsuitable_seqs = (sort_by_length(seqs) + sort_by_gc(seqs) + sort_by_quality(seqs))
+    seqs = fastq_to_dict(input_path)
+    unsuitable_seqs = (sort_by_length(seqs, length_bounds) + sort_by_gc(seqs, gc_bounds) + sort_by_quality(seqs, quality_threshold))
     unsuitable_seqs_set = set(unsuitable_seqs)
     selected_seqs = {name: value for name, value in seqs.items() if name not in unsuitable_seqs_set}
-    return selected_seqs
+    if output_filename == 'input_filename':
+        output_filename = os.path.basename(input_path)
+    create_filtered_fastq(output_filename, selected_seqs)
 
 
 def aa_tools(*args):
@@ -33,13 +44,13 @@ def aa_tools(*args):
     """
     *seqs, operation = args
 
-    answer = []
+    results = []
     for seq in seqs:
         if set(seq.upper()) <= {'G', 'A', 'V', 'L', 'I', 'P', 'F', 'M', 'W', 'S', 'T', 'C', 'N', 'Q', 'Y', 'E',
                                 'D', 'K', 'H', 'R'}:
             operations = {'calculate_protein_mass': calculate_protein_mass, 'group_amino_acids': group_amino_acids}
-            answer = operations[operation](seq)
-            return answer
+            results = operations[operation](seq)
+            return results
         else:
             return None
 
@@ -53,17 +64,17 @@ def run_dna_rna_tools(*args: str) -> str:
 
     """
     *seqs, operation = args
-    answer = []
+    results = []
     for seq in seqs:
         if set(seq.upper()) <= {'A', 'T', 'C', 'G'} or set(seq.upper()) <= {'A', 'U', 'C', 'G'}:
             operations = {'transcribe': seq_transcribe, 'reverse': seq_reverse, 'complement': seq_complement,
                           'reverse_complement': seq_reverse_complement}
             new_seq = operations[operation](seq)
-            answer.append(new_seq)
+            results.append(new_seq)
         else:
             pass
-        if len(answer) != 1:
-            return answer
+        if len(results) != 1:
+            return results
         else:
-            return answer[0]
+            return results[0]
 
