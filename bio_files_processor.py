@@ -18,6 +18,7 @@ def convert_multiline_fasta_to_oneline(input_fasta, output_fasta='input_fasta'):
     with open(output_fasta, 'w') as output_seq:
         for line in input_seq:
             output_seq.write(input_seq.readline().strip())
+    input_seq.close()
 
 
 def remove_punct(input_string: str) -> str:
